@@ -1,0 +1,48 @@
+<HTML>
+	<HEAD>
+		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
+		<TITLE>APlayerUI 演示页</TITLE>
+	</HEAD>
+	
+	<h1>APlayerUI 演示页</h1>
+	<h3>该页和所有flash文件必须放在 Http Server（例如：HFS）上，在本地打开会被IE拦截通信。</h3>
+	<h3>如果该页显示不正常，说明未安装 APlayerSDK</h3>
+	<BODY>		
+		<br></br>
+		<object 
+			id="Player"
+			width="800"
+			height="450" 
+			classid="CLSID:23A860E9-0C41-4E01-9206-D3FC0E413645"
+			style="left:20; top:90;" VIEWASTEXT>
+		</object>
+		<script type="text/javascript" src="AplayerUI.js">
+		</script>
+		
+		<script type="text/javascript" >
+			function GetElementById(Id)
+			{
+				if (navigator.appName.indexOf("Microsoft") != -1) {
+					return document.getElementById(Id);
+				}
+				else {
+					return document.getElementById(Id+"_FF");　　
+				}
+			}
+			
+			try{
+				var loadhandler = function(){
+					alert("loadhandler")
+					var player = GetElementById("Player");
+					APlayerUI.InitUIStyle(player, {nextBtnVisible:false})
+				}
+				window.attachEvent("on" + "load", loadhandler);
+				<!-- window.addEventListener("load", loadhandler, false); -->
+			}catch(e){
+				alert("error: "+e.message)
+			}
+			
+		</script>
+		
+	</BODY>
+</HTML>
