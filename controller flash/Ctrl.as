@@ -68,9 +68,13 @@
 		
 		public function OnStateChanged(oldState:String, newState:String){
 			if (newState == "3"){// PS_PAUSED
-				
-			}else if(newState == "5"){// PS_PLAY
-			
+				playBtn.visible = true;
+				pauseBtn.visible = false;
+				pauseBtn.enabled = false;
+			}else if(newState == "5" || newState == "4"){// PS_PLAY
+				playBtn.visible = false;
+				playBtn.enabled = false;
+				pauseBtn.visible = true;
 			}else if(newState == "0"){// PS_READY
 				// MsgBox("PS_READY");
 			}
@@ -171,7 +175,7 @@
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, OnMouseMove);
 			this.stage.addEventListener(MouseEvent.MOUSE_UP, OnMouseUp);
 			playBtn.addEventListener(ButtonEvent.BTN_RELEASE, OnPlayBtnPress);
-			pauseBtn.addEventListener(ButtonEvent.BTN_RELEASE, OnPlayBtnPress);
+			pauseBtn.addEventListener(ButtonEvent.BTN_RELEASE, OnPauseBtnPress);
 			volumeHighBtn.addEventListener(ButtonEvent.BTN_RELEASE, OnVolumeBtnPress);
 			volumeMuteBtn.addEventListener(ButtonEvent.BTN_RELEASE, OnVolumeBtnPress);
 		}
@@ -204,21 +208,26 @@
 		}
 		
 		private function OnPlayBtnPress(evt:ButtonEvent){
-			trace("OnPlayBtnPress")
-			playBtnVisible = !playBtnVisible;
-			playBtn.visible = playBtnVisible;
-			pauseBtn.visible = !playBtnVisible;
+			//trace("OnPlayBtnPress")
+			// playBtnVisible = !playBtnVisible;
+			// playBtn.visible = playBtnVisible;
+			// pauseBtn.visible = !playBtnVisible;
 			
-			if (!playBtnVisible){
-				trace("OnFlashPlay")
+			// if (!playBtnVisible){
+				// trace("OnFlashPlay")
 				// ExternalInterface.call("function() {Aplayer.Open('http://192.168.24.195/124.mp4')}");
+				// MsgBox("Playing")
 				ExternalInterface.call("OnFlashCall", "Play");
-			}else{
-				trace("OnFlashPause")
-				ExternalInterface.call("OnFlashCall", "Pause");
-			}
+			// }else{
+				// trace("OnFlashPause")
+				// ExternalInterface.call("OnFlashCall", "Pause");
+			// }
 		}
 		
+		private function OnPauseBtnPress(evt:Event){
+			MsgBox("Pause")
+			ExternalInterface.call("OnFlashCall", "Pause");
+		}
 		public function get playBtnState(){
 			return playBtnVisible;
 		}

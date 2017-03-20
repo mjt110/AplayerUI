@@ -20,6 +20,29 @@
 		</script>
 		
 		<script type="text/javascript" >
+			var EventUtil = 
+			{
+				addHandler: function(element, type, handler)
+				{
+					if (element.addEventListener) {
+						element.addEventListener(type, handler, false);
+					}
+					else {
+						element.attachEvent("on" + type, handler);
+					}
+				},
+				
+				removeHandler: function(element, type, handler)
+				{
+					if (element.removeEventListener) {
+						element.removeEventListener(type, handler, false);
+					}
+					else {
+						element.detachEvent("on" + type, handler);
+					}
+				}
+			};
+			
 			function GetElementById(Id)
 			{
 				if (navigator.appName.indexOf("Microsoft") != -1) {
@@ -32,16 +55,49 @@
 			
 			try{
 				var loadhandler = function(){
-					alert("loadhandler")
+					<!-- alert("loadhandler") -->
 					var player = GetElementById("Player");
-					APlayerUI.InitUIStyle(player, {nextBtnVisible:false})
+					APlayerUI.InitUIStyle(player);//, {nextBtnVisible:false, playBtnVisible:false}
 				}
-				window.attachEvent("on" + "load", loadhandler);
-				<!-- window.addEventListener("load", loadhandler, false); -->
+				<!-- window.attachEvent("on" + "load", loadhandler); -->
+				 <!-- window.addEventListener("load", loadhandler, false); -->
+				 EventUtil.addHandler(window, "load", loadhandler);
 			}catch(e){
 				alert("error: "+e.message)
 			}
 			
+			function OnStateChanged(oldState, newState)
+			{
+				APlayerUI.CallAsFunc("OnStateChanged", new Array(oldState, newState));
+				
+				switch (newState)
+				{
+					case 0:	// PS_READY
+					case 3:	// PS_PAUSED
+						//showflash();
+						break;
+					
+					case 5:	// PS_PLAY
+						//hideflash();
+						break;				
+				}
+			}
+			
+			function OnSeekCompleted(position){
+				APlayerUI.CallAsFunc("OnSeekCompleted", new Array(position));
+			}
+			function OnFlashCall(nID, args){
+				APlayerUI.OnFlashCall(nID, args);
+			}
+		</script>
+		<script type="text/javascript" for="Player" event="OnStateChanged(oldState, newState)">
+			OnStateChanged(oldState, newState);
+		</script>
+		<script type="text/javascript" for="Player" event="OnSeekCompleted(position)">
+			OnSeekCompleted(position);
+		</script>
+		<script type="text/javascript" for="Player" event="OnFlashCall(nID, args)">
+			OnFlashCall(nID, args);
 		</script>
 		
 	</BODY>
