@@ -71,6 +71,12 @@ APlayerUI.SetCtrlBarVisible = function(visible){
 	}
 }
 
+APlayerUI.SetVisible = function(bShow){
+	if (this.UI != null && this.flashBarID != null){
+		this.UI.SetElementVisible(this.flashBarID, bShow);
+	}
+}
+
 function UpdatePosition(){
 	APlayerUI.iPos = APlayerUI.aplayer.GetPosition();
 	

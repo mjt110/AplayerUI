@@ -17,6 +17,7 @@ AplayerUI.aplayer 可任意使用aplayer提供的方法。
 OnStateChanged
 OnFlashCall
 
+APlayerUI.SetVisible(true) 即可设置swf播控条可见性
 demo见playerV2.htm
 
 	
