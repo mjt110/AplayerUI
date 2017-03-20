@@ -26,6 +26,7 @@
 		private var nextBtn:NextButton;
 		private var playBtnVisible:Boolean = true;
 		private var muteBtnVisible:Boolean = false;
+		private var duration:int = 0;
 		private var msgBox:MessageBox;
 		public function Ctrl() {
 			
@@ -41,13 +42,15 @@
 		}
 		
 		private function InitExternalCall(){
-			ExternalInterface.addCallback("nextBtnVisible", this.nextBtnVisible)
-			ExternalInterface.addCallback("playBtnVisible", this.playBtnVisibleFun)
-			ExternalInterface.addCallback("pauseBtnVisible", this.pauseBtnVisible)
-			ExternalInterface.addCallback("processVisible", this.processVisible)
-			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged)
-			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted)
-			ExternalInterface.addCallback("UpdatePosition", this.UpdatePosition)
+			
+			ExternalInterface.addCallback("SetProgressPos", this.SetProgressPos);
+			ExternalInterface.addCallback("nextBtnVisible", this.nextBtnVisible);
+			ExternalInterface.addCallback("playBtnVisible", this.playBtnVisibleFun);
+			ExternalInterface.addCallback("pauseBtnVisible", this.pauseBtnVisible);
+			ExternalInterface.addCallback("processVisible", this.processVisible);
+			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged);
+			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted);
+			ExternalInterface.addCallback("UpdatePosition", this.UpdatePosition);
 		}
 		
 		public function nextBtnVisible(str:String){
@@ -60,23 +63,21 @@
 		
 		public function playBtnVisibleFun(str:String){
 			if (str == "false"){
-				MsgBox("Set playBtn false");
+				// MsgBox("Set playBtn false");
 				playBtn.visible = false;
-				playBtn.enabled = false;
 			}else if(str == "true"){
-				MsgBox("Set playBtn true");
+				// MsgBox("Set playBtn true");
 				playBtn.visible = true;
-				playBtn.enabled = true;
 			}
 		}
 		
 		public function pauseBtnVisible(str:String){
 			if (str == "false"){
 				pauseBtn.visible = false;
-				MsgBox("Set pauseBtn false");
+				// MsgBox("Set pauseBtn false");
 			}else if(str == "true"){
 				pauseBtn.visible = true;
-				MsgBox("Set pauseBtn true");
+				// MsgBox("Set pauseBtn true");
 			}
 		}
 		
@@ -101,15 +102,23 @@
 			}
 		}
 		
-		
+		public function SetProgressPos(sPos:String){
+			// MsgBox("SetPro: "+sPos)
+			var iPos = new int(sPos);
+			if(iPos != null && iPos > 0){
+				var newPos = Math.floor((iPos/this.duration) * stage.stageWidth);
+				progress.width = newPos;
+				progressBtn.x = newPos;
+			}
+		}
 		// private function 
 		public function OnSeekCompleted(position:String){
 			
 		}
 		
 		private function MsgBox(str:String){
-			// var msgBox = new MessageBox(str);
-			// stage.addChild(msgBox);
+			var msgBox = new MessageBox(str);
+			stage.addChild(msgBox);
 		}
 		
 		private function InitStyle(){
@@ -201,6 +210,8 @@
 		}
 		
 		public function UpdatePosition(cur:String, dur:String){
+			// MsgBox("UpdatePosition")
+			this.duration = new int(dur);
 			durationCtrl.SetDurationInfo(cur, dur);
 		}
 		
@@ -224,6 +235,9 @@
 			if (evt.buttonDown && progressBtn.pressed && evt.stageX < stage.stageWidth - 10){
 				progress.width = evt.stageX;
 				progressBtn.x = evt.stageX;
+				
+				var newPos = Math.floor((evt.stageX/stage.stageWidth) * this.duration);
+				ExternalInterface.call("OnFlashCall", "SetPosition", newPos.toString());
 			}else if (evt.buttonDown && 
 					  volumeBtn.pressed && 
 					  evt.stageX < stage.stageWidth - 82 &&
@@ -265,7 +279,7 @@
 		}
 		
 		private function OnPauseBtnPress(evt:Event){
-			MsgBox("Pause")
+			// MsgBox("Pause")
 			ExternalInterface.call("OnFlashCall", "Pause");
 		}
 		

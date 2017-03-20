@@ -45,7 +45,7 @@ APlayerUI.CallAsFunc = function(sname, argArr){
 	
 	var tmpStr = ""
 	for (var i = 0; i < argArr.length; i++) {
-		if (argArr[i].toString()){
+		if (argArr[i] && argArr[i].toString && argArr[i].toString()){
 			tmpStr = tmpStr + "<string>";
 			tmpStr = tmpStr + argArr[i].toString();
 			tmpStr = tmpStr + "</string>"
@@ -53,8 +53,7 @@ APlayerUI.CallAsFunc = function(sname, argArr){
 	}
 	invokeStr = invokeStr + tmpStr;
 	invokeStr = invokeStr + "</arguments></invoke>"
-	
-	//alert(invokeStr);
+
 	var ret = this.UI.CallFlashFunction(this.flashBarID, invokeStr);
 	//alert(ret);
 	return ret;
@@ -68,22 +67,31 @@ APlayerUI.SetCtrlBarVisible = function(visible){
 
 function UpdatePosition(){
 	APlayerUI.iPos = APlayerUI.aplayer.GetPosition();
+	
+	var tmp = new Array()
+	tmp[0] = APlayerUI.iPos;
+	APlayerUI.CallAsFunc("SetProgressPos", tmp);
+	
 	APlayerUI.CallAsFunc("UpdatePosition", new Array(APlayerUI.iPos, APlayerUI.iDuration));
+	
+	
+	// alert("SetProgressPos")
 }
+
 APlayerUI.OnStateChanged = function(oldState, newState){
 	switch (newState){
 		case 0:	// PS_READY
 			APlayerUI.CallAsFunc("UpdatePosition", new Array(0, 0));
 		case 3:	// PS_PAUSED
 			//showflash();
-			this.CallAsFunc("playBtnVisible", new Array(true));
-			this.CallAsFunc("pauseBtnVisible", new Array(false));
+			this.CallAsFunc("playBtnVisible", new Array("true"));
+			this.CallAsFunc("pauseBtnVisible", new Array("false"));
 			break;
 		case 5:	// PS_PLAY
 			//hideflash();
 			this.iDuration = this.aplayer.GetDuration();
-			this.CallAsFunc("playBtnVisible", new Array(false));
-			this.CallAsFunc("pauseBtnVisible", new Array(true));
+			this.CallAsFunc("playBtnVisible", new Array("false"));
+			this.CallAsFunc("pauseBtnVisible", new Array("true"));
 			if (this.updateDurationTimer == null){
 				this.updateDurationTimer = window.setInterval(UpdatePosition, 1000)
 			}
@@ -111,13 +119,24 @@ APlayerUI.OnFlashCall = function(nID, args){
 		}
 	}else if(args.indexOf("SetVolume") > 0){
 		var arr = getAsArgsArr(args);//AS传过来的参数，第一个是函数名
-		if(arr.length > 1){
+		if(arr != null && arr.length > 1){
 			var volumeVal = arr[1];
 			volumeVal = Number(volumeVal);
 			if (volumeVal != null && volumeVal != undefined){
-				alert("SetVolume volumeVal:"+volumeVal);
+				// alert("SetVolume volumeVal:"+volumeVal);
 		
 				this.aplayer.SetVolume(volumeVal);
+			}
+		}
+	}else if(args.indexOf("SetPosition") > 0){
+		var arr = getAsArgsArr(args);//AS传过来的参数，第一个是函数名
+		if(arr != null && arr.length > 1){
+			var posVal = arr[1];
+			posVal = Number(posVal);
+			if (posVal != null && posVal != undefined){
+				// alert("SetVolume posVal:"+posVal);
+		
+				this.aplayer.SetPosition(posVal);
 			}
 		}
 	}
