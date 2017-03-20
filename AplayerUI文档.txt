@@ -11,6 +11,12 @@ nextBtnVisible(String)//初始化时控制下一集按钮的显示与隐藏，默认显示
 playBtnVisible(String)//同上，播放按钮
 processVisible(String)//同上，进度条
 
-UpdateDuration(String, String)//更新播放进度
+AplayerUI.aplayer 可任意使用aplayer提供的方法。
+
+另外，html页面需要注册以下事件：
+OnStateChanged
+OnFlashCall
+
+demo见playerV2.htm
 
 	
