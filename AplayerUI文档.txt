@@ -1,0 +1,14 @@
+AplayerUI.js + ctrl.swf 合起来使用。
+
+ctrl.swf只提供操作界面元素的方法，而不处理界面元素的具体逻辑。
+例如，ctrl.swf提供隐藏Play按钮的方法，但是不处理Play按钮何时隐藏。
+AplayerUI.js负责处理界面逻辑：比如更新播放进度、播放按钮状态等等。
+
+ctrl.swf通过ExternalInterface.addCallback注册有以下方法：
+(注：为简化APlayerUI.CallAsFunc的实现，AS提供给JS的方法，参数统一用String)
+
+nextBtnVisible(String)//初始化时控制下一集按钮的显示与隐藏，默认显示
+playBtnVisible(String)//同上，播放按钮
+processVisible(String)//同上，进度条
+
+UpdateDuration(String, String)//更新播放进度
