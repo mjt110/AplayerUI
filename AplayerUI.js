@@ -21,6 +21,8 @@ APlayerUI.InitUIStyle = function(uiElement, styleConfigObj){
 	this.UI.SetElementPosition(this.flashBarID, 7, 0, 80, 100, 20);
 	this.UI.SetElementVisible(this.flashBarID, true);
 	
+	this.UI.ShowDefaultControlBar(false, 57);
+	
 	this.SetStyle(styleConfigObj);
 }
 
