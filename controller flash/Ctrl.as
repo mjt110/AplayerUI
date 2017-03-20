@@ -10,39 +10,81 @@
 	import flash.external.ExternalInterface;
 	
 	public class Ctrl extends MovieClip {
-		private var bkg:BkgImage;
+		private var bkg:BkgFakeBtn;
 		private var playBtn:PlayButton;
 		private var pauseBtn:PauseButton;
+		private var volumeHighBtn:VolumeHigh;
+		private var volumeMuteBtn:VolumeMute;
+		private var progress:Progress;
+		private var volume:Progress;
+		private var volumeBkg:VolumeProgress;
+		private var progressBtn:ProgressButton;
+		private var progressBkgBtn:ProgressBkgBtn;
+		private var volumeBtn:VolumeBtn;
+		
+		private var nextBtn:NextButton;
 		private var playBtnVisible:Boolean = true;
 		private var muteBtnVisible:Boolean = false;
 		private var msgBox:MessageBox;
 		public function Ctrl() {
-			// bkg = new BkgImage();
-			// bkg.x = 100;
-			// bkg.y = 100;
-			// addChild(bkg);
+			
 			// this.x = 0;
 			// this.y = 0;
 			// this.width = stage.stageWidth;
 			// this.height= stage.stageHeight;
 			
 			
-			
-			
+			InitExternalCall();
 			InitStyle();
 			InitListener();
 		}
 		
+		private function InitExternalCall(){
+			ExternalInterface.addCallback("nextBtnVisible", this.nextBtnVisible)
+			ExternalInterface.addCallback("playBtnVisible", this.playBtnVisibleFun)
+			ExternalInterface.addCallback("processVisible", this.processVisible)
+			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged)
+			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted)
+		}
+		
 		public function nextBtnVisible(str:String){
-			MsgBox("hahhahahhahah")
 			if (str == "false"){
-				MsgBox("hahhahahhahah")
+				nextBtn.visible = false;
 			}
 		}
+		
+		public function playBtnVisibleFun(str:String){
+			if (str == "false"){
+				playBtn.visible = false;
+			}
+		}
+		
+		public function processVisible(str:String){
+			if (str == "false"){
+				progress.visible = false;
+				progressBtn.visible = false;
+			}
+		}
+		
+		public function OnStateChanged(oldState:String, newState:String){
+			if (newState == "3"){// PS_PAUSED
+				
+			}else if(newState == "5"){// PS_PLAY
+			
+			}else if(newState == "0"){// PS_READY
+				// MsgBox("PS_READY");
+			}
+		}
+		
+		public function OnSeekCompleted(position:String){
+			
+		}
+		
 		private function MsgBox(str:String){
 			var msgBox = new MessageBox(str);
 			stage.addChild(msgBox);
 		}
+		
 		private function InitStyle(){
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -50,59 +92,77 @@
 			stage.doubleClickEnabled = true;
 			stage.showDefaultContextMenu = false;
 			
-			playBtn = new PlayButton();
-			playBtn.x = 27;
-			playBtn.y = stage.stageHeight - 54;
+			bkg = new BkgFakeBtn();
+			bkg.x = 0;
+			bkg.y = stage.stageHeight - 54;
+			bkg.width = stage.stageWidth;
+			bkg.enabled = false;
+			this.stage.addChild(bkg);
 			
-			trace("stage.stageWidth: " + stage.stageWidth + " stage.stageHeight: " + stage.stageHeight);
-			addChild(playBtn);
+			progressBkgBtn = new ProgressBkgBtn();
+			progressBkgBtn.x = 0;
+			progressBkgBtn.y = stage.stageHeight - 60;
+			progressBkgBtn.width = stage.stageWidth;
+			progressBkgBtn.enabled = false;
+			this.stage.addChild(progressBkgBtn);
+			
+			playBtn = new PlayButton();
+			playBtn.x = 0;
+			playBtn.y = stage.stageHeight - 54;
+			this.stage.addChild(playBtn);
+			//trace("stage.stageWidth: " + stage.stageWidth + " stage.stageHeight: " + stage.stageHeight);
 			
 			pauseBtn = new PauseButton();
-			pauseBtn.x = 27;
+			pauseBtn.x = 0;
 			pauseBtn.y = stage.stageHeight - 54;
 			pauseBtn.visible = false;
-			addChild(pauseBtn);
+			this.stage.addChild(pauseBtn);
 			
 			nextBtn = new NextButton();
-			nextBtn.x = 81;
+			nextBtn.x = 55;
 			nextBtn.y = stage.stageHeight - 54;
-			addChild(nextBtn);
+			this.stage.addChild(nextBtn);
 			
 			volumeHighBtn = new VolumeHigh();
-			volumeHighBtn.x = stage.stageWidth - 196;
-			volumeHighBtn.y = stage.stageHeight - 48;
+			volumeHighBtn.x = stage.stageWidth - 170;
+			volumeHighBtn.y = stage.stageHeight - 42;
 			//volumeHighBtn.enabled = false;
-			addChild(volumeHighBtn);
+			this.stage.addChild(volumeHighBtn);
 			
 			volumeMuteBtn = new VolumeMute();
-			volumeMuteBtn.x = stage.stageWidth - 196;
-			volumeMuteBtn.y = stage.stageHeight - 48;
+			volumeMuteBtn.x = stage.stageWidth - 170;
+			volumeMuteBtn.y = stage.stageHeight - 42;
 			volumeMuteBtn.visible = false;
-			addChild(volumeMuteBtn);
+			this.stage.addChild(volumeMuteBtn);
 			
-			// stage.BkgBtn.x = 100;
-			// stage.BkgBtn.y = 100;
 			
 			progress = new Progress();
 			progress.x = 0;
-			progress.y = this.stage.stageHeight - 83;
+			progress.y = this.stage.stageHeight - 60;
 			progress.width = 10;
+			progress.enabled = false;
 			this.stage.addChild(progress);
 			
 			progressBtn = new ProgressButton();
 			progressBtn.x = 10;
-			progressBtn.y = this.stage.stageHeight - 80;
+			progressBtn.y = this.stage.stageHeight - 64;
 			this.stage.addChild(progressBtn);
 			
+			volumeBkg = new VolumeProgress();
+			volumeBkg.x = stage.stageWidth - 135;
+			volumeBkg.y = this.stage.stageHeight - 35;
+			volumeBkg.enabled = false;
+			this.stage.addChild(volumeBkg);
+			
 			volume = new Progress();
-			volume.x = stage.stageWidth - 135;
-			volume.y = this.stage.stageHeight - 49;
+			volume.x = stage.stageWidth - 138;
+			volume.y = this.stage.stageHeight - 35;
 			volume.width = 1;
 			this.stage.addChild(volume);
 			
 			volumeBtn = new  VolumeBtn();
-			volumeBtn.x = stage.stageWidth - 130;
-			volumeBtn.y = stage.stageHeight - 48;
+			volumeBtn.x = stage.stageWidth - 138;
+			volumeBtn.y = stage.stageHeight - 42;
 			this.stage.addChild(volumeBtn);		
 		}
 		
@@ -129,7 +189,7 @@
 			}else if (evt.buttonDown && 
 					  volumeBtn.pressed && 
 					  evt.stageX < stage.stageWidth - 82 &&
-					  evt.stageX > stage.stageWidth - 130){
+					  evt.stageX > stage.stageWidth - 138){
 				
 				volume.width = evt.stageX - volume.x ;
 				volumeBtn.x = evt.stageX;
@@ -164,6 +224,12 @@
 		}
 		
 		private function OnResize(evt:Event){
+			bkg.y = stage.stageHeight - 54;
+			bkg.width = stage.stageWidth;
+			
+			progressBkgBtn.y = stage.stageHeight - 60;
+			progressBkgBtn.width = stage.stageWidth;
+			
 			playBtn.x = 27;
 			playBtn.y = stage.stageHeight - 54;
 			pauseBtn.x = 27;
@@ -171,16 +237,21 @@
 			nextBtn.x = 81;
 			nextBtn.y = stage.stageHeight - 54;
 			
-			volumeHighBtn.x = stage.stageWidth - 196;
-			volumeHighBtn.y = stage.stageHeight - 48;
-			volumeMuteBtn.x = stage.stageWidth - 196;
-			volumeMuteBtn.y = stage.stageHeight - 48;
+			volumeBkg.x = stage.stageWidth - 135;
+			volumeBkg.y = this.stage.stageHeight - 35;
+			
+			volumeHighBtn.x = stage.stageWidth - 170;
+			volumeHighBtn.y = stage.stageHeight - 42;
+			volumeMuteBtn.x = stage.stageWidth - 170;
+			volumeMuteBtn.y = stage.stageHeight - 42;
 			progress.x = 0;
-			progress.y = this.stage.stageHeight - 83;
-			progressBtn.y = this.stage.stageHeight - 80;
-			volume.x = 630;
-			volume.y = this.stage.stageHeight - 51;
-			volumeBtn.y = stage.stageHeight - 48;
+			progress.y = this.stage.stageHeight - 60;
+			progressBtn.y = this.stage.stageHeight - 64;
+			
+			volume.x = stage.stageWidth - 138;
+			volume.y = this.stage.stageHeight - 35;
+			volumeBtn.x = stage.stageWidth - 138;
+			volumeBtn.y = stage.stageHeight - 42;
 		}
 	}
 	
