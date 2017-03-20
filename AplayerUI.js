@@ -19,6 +19,9 @@ APlayerUI.InitUIStyle = function(uiElement, styleConfigObj){
 	this.UI = uiElement;
 	this.aplayer = uiElement.GetAPlayerObject();
 	this.styleConfig = styleConfigObj;
+	if (this.styleConfig == null){
+		this.styleConfig = {};
+	}
 	
 	this.flashBarID = this.UI.AddElement(3, this.flashUrl);
 	this.UI.SetElementPosition(this.flashBarID, 7, 0, 80, 100, 20);
@@ -54,8 +57,11 @@ APlayerUI.CallAsFunc = function(sname, argArr){
 	invokeStr = invokeStr + tmpStr;
 	invokeStr = invokeStr + "</arguments></invoke>"
 
+	// if (sname == "UpdateVolumePos")
+		// alert(invokeStr);
+	
 	var ret = this.UI.CallFlashFunction(this.flashBarID, invokeStr);
-	//alert(ret);
+
 	return ret;
 }
 
@@ -72,6 +78,9 @@ function UpdatePosition(){
 	tmp[0] = APlayerUI.iPos;
 	APlayerUI.CallAsFunc("SetProgressPos", tmp);
 	
+	tmp[0] = APlayerUI.aplayer.GetVolume();
+	APlayerUI.CallAsFunc("UpdateVolumePos", tmp);
+	
 	APlayerUI.CallAsFunc("UpdatePosition", new Array(APlayerUI.iPos, APlayerUI.iDuration));
 	
 	
@@ -84,16 +93,26 @@ APlayerUI.OnStateChanged = function(oldState, newState){
 			APlayerUI.CallAsFunc("UpdatePosition", new Array(0, 0));
 		case 3:	// PS_PAUSED
 			//showflash();
-			this.CallAsFunc("playBtnVisible", new Array("true"));
-			this.CallAsFunc("pauseBtnVisible", new Array("false"));
+			if (this.styleConfig["playBtnVisible"] == null || 
+				this.styleConfig["playBtnVisible"] == true){
+				this.CallAsFunc("playBtnVisible", new Array("true"));
+				this.CallAsFunc("pauseBtnVisible", new Array("false"));
+			}
 			break;
 		case 5:	// PS_PLAY
 			//hideflash();
 			this.iDuration = this.aplayer.GetDuration();
-			this.CallAsFunc("playBtnVisible", new Array("false"));
-			this.CallAsFunc("pauseBtnVisible", new Array("true"));
-			if (this.updateDurationTimer == null){
-				this.updateDurationTimer = window.setInterval(UpdatePosition, 1000)
+			if (this.styleConfig["playBtnVisible"] == null || 
+				this.styleConfig["playBtnVisible"] == true){
+				this.CallAsFunc("playBtnVisible", new Array("false"));
+				this.CallAsFunc("pauseBtnVisible", new Array("true"));
+			}
+			
+			if (this.styleConfig["processVisible"] == null || 
+				this.styleConfig["processVisible"] == true){
+				if (this.updateDurationTimer == null){
+					this.updateDurationTimer = window.setInterval(UpdatePosition, 1000)
+				}
 			}
 			break;				
 	}

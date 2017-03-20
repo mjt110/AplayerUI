@@ -51,6 +51,7 @@
 			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged);
 			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted);
 			ExternalInterface.addCallback("UpdatePosition", this.UpdatePosition);
+			ExternalInterface.addCallback("UpdateVolumePos", this.UpdateVolumePos);
 		}
 		
 		public function nextBtnVisible(str:String){
@@ -215,6 +216,14 @@
 			durationCtrl.SetDurationInfo(cur, dur);
 		}
 		
+		public function UpdateVolumePos(sVolume:String){
+			var iVolume = new int(sVolume);
+			if(iVolume != null && iVolume > 0){
+				var newPos = Math.floor((iVolume/100) * 56);
+				volume.width = newPos;
+				volumeBtn.x = newPos + volume.x;
+			}
+		}
 		private function InitListener(){
 			this.stage.addEventListener(Event.RESIZE, OnResize);
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, OnMouseMove);
@@ -245,6 +254,10 @@
 				
 				volume.width = evt.stageX - volume.x ;
 				volumeBtn.x = evt.stageX;
+				
+				var newVolume = Math.floor((volume.width/56) * 100);
+				
+				ExternalInterface.call("OnFlashCall", "SetVolume", newVolume.toString());
 			}
 		}
 		
