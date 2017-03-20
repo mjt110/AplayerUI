@@ -61,16 +61,33 @@ APlayerUI.SetCtrlBarVisible = function(visible){
 	}
 }
 
+APlayerUI.OnStateChanged = function(oldState, newState){
+	switch (newState){
+		case 0:	// PS_READY
+			
+		case 3:	// PS_PAUSED
+			//showflash();
+			this.CallAsFunc("playBtnVisible", new Array(true));
+			break;
+		
+		case 5:	// PS_PLAY
+			//hideflash();
+			this.CallAsFunc("pauseBtnVisible", new Array(true));
+			break;				
+	}
+}
+
+//AS代码对APlayer的控制，都集中在这里分发
 APlayerUI.OnFlashCall = function(nID, args){
 	if(nID != this.flashBarID)
 		return;
 	
-	alert(args.toString());
+	// alert(args.toString());
 	if (args.indexOf("Pause") > 0){
-		alert("Pause");
+		// alert("Pause");
 		this.aplayer.Pause();
 	}else if (args.indexOf("Play") > 0){
-		alert("PLAAYING");
+		// alert("PLAAYING");
 		var state = this.aplayer.GetState()
 		if (state == 0){
 			// alert("Playing");

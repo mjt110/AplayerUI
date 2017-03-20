@@ -68,8 +68,8 @@
 			
 			function OnStateChanged(oldState, newState)
 			{
-				APlayerUI.CallAsFunc("OnStateChanged", new Array(oldState, newState));
-				
+				<!-- APlayerUI.CallAsFunc("OnStateChanged", new Array(oldState, newState)); -->
+				APlayerUI.OnStateChanged(oldState, newState);
 				switch (newState)
 				{
 					case 0:	// PS_READY

@@ -17,6 +17,7 @@
 		private var volumeMuteBtn:VolumeMute;
 		private var progress:Progress;
 		private var volume:Progress;
+		private var durationCtrl:DurationCtrl;
 		private var volumeBkg:VolumeProgress;
 		private var progressBtn:ProgressButton;
 		private var progressBkgBtn:ProgressBkgBtn;
@@ -42,20 +43,33 @@
 		private function InitExternalCall(){
 			ExternalInterface.addCallback("nextBtnVisible", this.nextBtnVisible)
 			ExternalInterface.addCallback("playBtnVisible", this.playBtnVisibleFun)
+			ExternalInterface.addCallback("pauseBtnVisible", this.pauseBtnVisible)
 			ExternalInterface.addCallback("processVisible", this.processVisible)
 			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged)
 			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted)
+			ExternalInterface.addCallback("UpdateDuration", this.UpdateDuration)
 		}
 		
 		public function nextBtnVisible(str:String){
 			if (str == "false"){
 				nextBtn.visible = false;
+			}else if(str == "true"){
+				nextBtn.visible = true;
 			}
 		}
 		
 		public function playBtnVisibleFun(str:String){
 			if (str == "false"){
 				playBtn.visible = false;
+			}else if(str == "true"){
+				playBtn.visible = true;
+			}
+		}
+		public function pauseBtnVisible(str:String){
+			if (str == "false"){
+				pauseBtn.visible = false;
+			}else if(str == "true"){
+				pauseBtn.visible = true;
 			}
 		}
 		
@@ -80,6 +94,8 @@
 			}
 		}
 		
+		
+		// private function 
 		public function OnSeekCompleted(position:String){
 			
 		}
@@ -109,6 +125,13 @@
 			progressBkgBtn.width = stage.stageWidth;
 			progressBkgBtn.enabled = false;
 			this.stage.addChild(progressBkgBtn);
+			
+			durationCtrl = new DurationCtrl();
+			durationCtrl.x = 130;
+			durationCtrl.y = 25;
+			this.stage.addChild(durationCtrl);
+			// durationCtrl.text = "00:00/88:56";
+			
 			
 			playBtn = new PlayButton();
 			playBtn.x = 0;
@@ -170,6 +193,10 @@
 			this.stage.addChild(volumeBtn);		
 		}
 		
+		public function UpdateDuration(cur:String, dur:String){
+			durationCtrl.SetDurationInfo(cur, dur);
+		}
+		
 		private function InitListener(){
 			this.stage.addEventListener(Event.RESIZE, OnResize);
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, OnMouseMove);
@@ -228,6 +255,7 @@
 			MsgBox("Pause")
 			ExternalInterface.call("OnFlashCall", "Pause");
 		}
+		
 		public function get playBtnState(){
 			return playBtnVisible;
 		}

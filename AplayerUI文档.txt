@@ -11,4 +11,4 @@ nextBtnVisible(String)//初始化时控制下一集按钮的显示与隐藏，默认显示
 playBtnVisible(String)//同上，播放按钮
 processVisible(String)//同上，进度条
 
-UpdateDuration(String, String)//更新播放进度
+UpdateDuration(String, String)//更新播放进度	
