@@ -47,7 +47,7 @@
 			ExternalInterface.addCallback("processVisible", this.processVisible)
 			ExternalInterface.addCallback("OnStateChanged", this.OnStateChanged)
 			ExternalInterface.addCallback("OnSeekCompleted", this.OnSeekCompleted)
-			ExternalInterface.addCallback("UpdateDuration", this.UpdateDuration)
+			ExternalInterface.addCallback("UpdatePosition", this.UpdatePosition)
 		}
 		
 		public function nextBtnVisible(str:String){
@@ -60,16 +60,23 @@
 		
 		public function playBtnVisibleFun(str:String){
 			if (str == "false"){
+				MsgBox("Set playBtn false");
 				playBtn.visible = false;
+				playBtn.enabled = false;
 			}else if(str == "true"){
+				MsgBox("Set playBtn true");
 				playBtn.visible = true;
+				playBtn.enabled = true;
 			}
 		}
+		
 		public function pauseBtnVisible(str:String){
 			if (str == "false"){
 				pauseBtn.visible = false;
+				MsgBox("Set pauseBtn false");
 			}else if(str == "true"){
 				pauseBtn.visible = true;
+				MsgBox("Set pauseBtn true");
 			}
 		}
 		
@@ -101,8 +108,8 @@
 		}
 		
 		private function MsgBox(str:String){
-			var msgBox = new MessageBox(str);
-			stage.addChild(msgBox);
+			// var msgBox = new MessageBox(str);
+			// stage.addChild(msgBox);
 		}
 		
 		private function InitStyle(){
@@ -125,12 +132,6 @@
 			progressBkgBtn.width = stage.stageWidth;
 			progressBkgBtn.enabled = false;
 			this.stage.addChild(progressBkgBtn);
-			
-			durationCtrl = new DurationCtrl();
-			durationCtrl.x = 130;
-			durationCtrl.y = 25;
-			this.stage.addChild(durationCtrl);
-			// durationCtrl.text = "00:00/88:56";
 			
 			
 			playBtn = new PlayButton();
@@ -190,10 +191,16 @@
 			volumeBtn = new  VolumeBtn();
 			volumeBtn.x = stage.stageWidth - 138;
 			volumeBtn.y = stage.stageHeight - 42;
-			this.stage.addChild(volumeBtn);		
+			this.stage.addChild(volumeBtn);	
+
+			durationCtrl = new DurationCtrl();
+			durationCtrl.x = 130;
+			durationCtrl.y = stage.stageHeight - 45;
+			this.stage.addChild(durationCtrl);
+			durationCtrl.text = "00:00/88:56";			
 		}
 		
-		public function UpdateDuration(cur:String, dur:String){
+		public function UpdatePosition(cur:String, dur:String){
 			durationCtrl.SetDurationInfo(cur, dur);
 		}
 		
@@ -232,6 +239,12 @@
 			muteBtnVisible = !muteBtnVisible;
 			volumeMuteBtn.visible = muteBtnVisible;
 			volumeHighBtn.visible = !muteBtnVisible;
+			
+			if (muteBtnVisible){
+				ExternalInterface.call("OnFlashCall", "SetVolume", "0");
+			}else{
+				ExternalInterface.call("OnFlashCall", "SetVolume", "50");
+			}
 		}
 		
 		private function OnPlayBtnPress(evt:ButtonEvent){
@@ -267,11 +280,14 @@
 			progressBkgBtn.y = stage.stageHeight - 60;
 			progressBkgBtn.width = stage.stageWidth;
 			
-			playBtn.x = 27;
+			durationCtrl.x = 130;
+			durationCtrl.y = stage.stageHeight - 45;
+			
+			playBtn.x = 0;
 			playBtn.y = stage.stageHeight - 54;
-			pauseBtn.x = 27;
+			pauseBtn.x = 0;
 			pauseBtn.y = stage.stageHeight - 54;
-			nextBtn.x = 81;
+			nextBtn.x = 55;
 			nextBtn.y = stage.stageHeight - 54;
 			
 			volumeBkg.x = stage.stageWidth - 135;

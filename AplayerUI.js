@@ -8,6 +8,9 @@ APlayerUI.UI=null;
 APlayerUI.styleConfig=null;
 APlayerUI.flashBarID=null;
 APlayerUI.aplayer = null;
+APlayerUI.updateDurationTimer = null;
+APlayerUI.iPos = 0;
+APlayerUI.iDuration = 0;
 APlayerUI.flashUrl="http://169.254.15.254/ctrl.swf";
 	
 // styleConfigObj = {nextBtnVisible:false, processVisible:false}//只传需要隐藏的部分即可。
@@ -63,18 +66,27 @@ APlayerUI.SetCtrlBarVisible = function(visible){
 	}
 }
 
+function UpdatePosition(){
+	APlayerUI.iPos = APlayerUI.aplayer.GetPosition();
+	APlayerUI.CallAsFunc("UpdatePosition", new Array(APlayerUI.iPos, APlayerUI.iDuration));
+}
 APlayerUI.OnStateChanged = function(oldState, newState){
 	switch (newState){
 		case 0:	// PS_READY
-			
+			APlayerUI.CallAsFunc("UpdatePosition", new Array(0, 0));
 		case 3:	// PS_PAUSED
 			//showflash();
 			this.CallAsFunc("playBtnVisible", new Array(true));
+			this.CallAsFunc("pauseBtnVisible", new Array(false));
 			break;
-		
 		case 5:	// PS_PLAY
 			//hideflash();
+			this.iDuration = this.aplayer.GetDuration();
+			this.CallAsFunc("playBtnVisible", new Array(false));
 			this.CallAsFunc("pauseBtnVisible", new Array(true));
+			if (this.updateDurationTimer == null){
+				this.updateDurationTimer = window.setInterval(UpdatePosition, 1000)
+			}
 			break;				
 	}
 }
@@ -97,5 +109,58 @@ APlayerUI.OnFlashCall = function(nID, args){
 		}else{
 			this.aplayer.Play();
 		}
-	} 
+	}else if(args.indexOf("SetVolume") > 0){
+		var arr = getAsArgsArr(args);//AS传过来的参数，第一个是函数名
+		if(arr.length > 1){
+			var volumeVal = arr[1];
+			volumeVal = Number(volumeVal);
+			if (volumeVal != null && volumeVal != undefined){
+				alert("SetVolume volumeVal:"+volumeVal);
+		
+				this.aplayer.SetVolume(volumeVal);
+			}
+		}
+	}
+}
+
+var loadXML=function(xmlString){
+	var xmlDoc = null;
+	if(!window.DOMParser&&window.ActiveXObject){
+		var xmlDomVersions = ['MSXML.2.DOMDocument.6.0', 'MSXML.2.DOMDocument.3.0', 'Microsoft.XMLDOM'];
+		for (var i = 0; i < xmlDomVersions.length; i++) {
+			try {
+				xmlDoc = new ActiveXObject(xmlDomVersions[i]);
+				xmlDoc.async = false;
+				xmlDoc.loadXML(xmlString);//loadXML方法载入xml字符串
+				break;
+			} catch (e) {}
+		}
+
+	}
+	return xmlDoc;
+}
+
+//AS使用OnFlashCall传过来的参数也统一为string
+var getAsArgsArr=function(xmlStr){
+	var xmlObj = loadXML(xmlStr);
+	if(xmlObj == null){
+		return null;
+	}
+	var elements = xmlObj.getElementsByTagName("arguments/string");
+	if(elements.length < 1){
+		return null;
+	}
+	var arr = new Array();
+	
+	for(var i=0;i<elements.length;i++){
+		var val = elements[i].firstChild.nodeValue;
+		if(val != null){
+			arr.push(val);
+		}
+	}
+	
+	if (arr.length > 0)
+		return arr;
+	
+	return null;
 }
